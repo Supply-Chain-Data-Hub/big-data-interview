@@ -3,6 +3,38 @@
 Consider the following complex SQL query that involves relationships between companies, their suppliers, and customers:
 
 ```sql
+CREATE TABLE companies (
+    id INT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    address VARCHAR(255),
+    city VARCHAR(100),
+    state VARCHAR(50),
+    country VARCHAR(50),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE company_relationships (
+    id INT PRIMARY KEY,
+    company_id INT,
+    related_company_id INT,
+    relationship_type ENUM('supplier', 'customer'),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (company_id) REFERENCES companies(id),
+    FOREIGN KEY (related_company_id) REFERENCES companies(id)
+);
+
+CREATE TABLE transactions (
+    id INT PRIMARY KEY,
+    from_company_id INT,
+    to_company_id INT,
+    value DECIMAL(15, 2),
+    transaction_date DATE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (from_company_id) REFERENCES companies(id),
+    FOREIGN KEY (to_company_id) REFERENCES companies(id)
+);
+
+
 WITH supplier_customer_counts AS (
     SELECT 
         company_id,
